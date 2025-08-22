@@ -1,0 +1,6 @@
+@VCallbackServer_HostAddress = http://localhost:5196
+
+GET {{VCallbackServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
