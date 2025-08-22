@@ -10,7 +10,6 @@ namespace VCallbackServer.Controllers
     {
         private readonly RequestLoggerService _requestLogger;
 
-        // Вместо ILogger внедряем наш сервис
         public MegafonCallbackController(RequestLoggerService requestLogger)
         {
             _requestLogger = requestLogger;

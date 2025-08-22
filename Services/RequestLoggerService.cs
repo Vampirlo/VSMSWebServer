@@ -15,22 +15,22 @@ namespace VCallbackServer.Services
         // Главный метод, который будет логировать весь запрос
         public void LogIncomingRequest(HttpContext context, object requestBody)
         {
-            _logger.LogInformation("=== НОВЫЙ ЗАПРОС ===");
-            _logger.LogInformation("Время: {Time}", DateTime.Now);
-            _logger.LogInformation("IP-адрес клиента: {RemoteIpAddress}", context.Connection.RemoteIpAddress);
-            _logger.LogInformation("Метод: {Method}", context.Request.Method);
-            _logger.LogInformation("Путь: {Path}", context.Request.Path);
+            _logger.LogInformation("=== NEW REQUEST ===");
+            _logger.LogInformation("Time: {Time}", DateTime.Now);
+            _logger.LogInformation("Client IP-address: {RemoteIpAddress}", context.Connection.RemoteIpAddress);
+            _logger.LogInformation("Method: {Method}", context.Request.Method);
+            _logger.LogInformation("Path: {Path}", context.Request.Path);
 
             LogHeaders(context.Request.Headers);
             LogRequestBody(requestBody);
 
             context.Response.OnCompleted(() =>
             {
-                _logger.LogInformation("Отправлен ответ: Status {StatusCode}", context.Response.StatusCode);
+                _logger.LogInformation("Response sent: Status {StatusCode}", context.Response.StatusCode);
                 return Task.CompletedTask;
             });
 
-            _logger.LogInformation("=== КОНЕЦ ЗАПРОСА ===");
+            _logger.LogInformation("=== END OF REQUEST ===");
         }
 
         private void LogHeaders(IHeaderDictionary headers)
@@ -46,11 +46,11 @@ namespace VCallbackServer.Services
             try
             {
                 var jsonBody = JsonSerializer.Serialize(body);
-                _logger.LogInformation("Тело запроса (JSON): {Body}", jsonBody);
+                _logger.LogInformation("Request body (JSON): {Body}", jsonBody);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Не удалось сериализовать тело запроса в JSON");
+                _logger.LogError(ex, "Failed to serialize the request body in JSON");
             }
         }
     }
