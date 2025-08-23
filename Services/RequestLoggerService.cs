@@ -6,13 +6,21 @@ namespace VCallbackServer.Services
     {
         private readonly ILogger<RequestLoggerService> _logger;
 
-        // Получаем логгер через конструктор (Dependency Injection)
+        // /api/MegafonCallback DB status write logging
         public RequestLoggerService(ILogger<RequestLoggerService> logger)
         {
             _logger = logger;
         }
 
-        // Главный метод, который будет логировать весь запрос
+        public void LogRequestStatusUpdate(string uuid, string status, bool success, string? errorMessage = null)
+        {
+            if (success)
+                _logger.LogInformation("Status update SUCCESS: UUID={Uuid}, Status={Status}", uuid, status);
+            else
+                _logger.LogWarning("Status update FAILED: UUID={Uuid}, Status={Status}, Error={ErrorMessage}", uuid, status, errorMessage ?? "Request not found");
+        }
+
+        // /api/MegafonCallback Main logging 
         public void LogIncomingRequest(HttpContext context, object requestBody)
         {
             _logger.LogInformation("=== NEW REQUEST ===");

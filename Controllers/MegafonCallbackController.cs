@@ -9,16 +9,25 @@ namespace VCallbackServer.Controllers
     public class MegafonCallbackController : ControllerBase
     {
         private readonly RequestLoggerService _requestLogger;
+        private readonly RequestRepositoryService _requestRepository;
 
-        public MegafonCallbackController(RequestLoggerService requestLogger)
+        public MegafonCallbackController(RequestLoggerService requestLogger, RequestRepositoryService requestRepository)
         {
             _requestLogger = requestLogger;
+            _requestRepository = requestRepository;
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] DeliveryReport deliveryReport)
+        public async Task<IActionResult> PostAsync([FromBody] DeliveryReport deliveryReport)
         {
             _requestLogger.LogIncomingRequest(HttpContext, deliveryReport);
+
+            string msgId = deliveryReport.msg_id;
+            string status = deliveryReport.status;
+
+            bool updateSuccess = await _requestRepository.UpdateRequestStatusAsync(msgId, status);
+
+            _requestLogger.LogRequestStatusUpdate(msgId, status, updateSuccess);
 
 
             HttpContext.Response.ContentType = "text/plain";
