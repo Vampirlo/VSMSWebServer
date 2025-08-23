@@ -1,4 +1,4 @@
-﻿namespace VCallbackServer.Models
+﻿namespace VSMSWebServer.Models
 {
     public class Request
     {

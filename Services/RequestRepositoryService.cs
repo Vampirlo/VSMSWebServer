@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VCallbackServer.Data;
-using VCallbackServer.Models;
+using VSMSWebServer.Models;
 
-namespace VCallbackServer.Services
+namespace VSMSWebServer.Services
 {
     public class RequestRepositoryService
     {

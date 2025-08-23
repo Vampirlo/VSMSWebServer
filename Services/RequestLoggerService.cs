@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace VCallbackServer.Services
+namespace VSMSWebServer.Services
 {
     public class RequestLoggerService
     {

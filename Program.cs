@@ -1,7 +1,5 @@
 // netstat -ano | findstr :8080
-using Microsoft.Extensions.Logging;
-using VCallbackServer.Services;
-using Serilog;
+using VSMSWebServer.Services;
 using Microsoft.EntityFrameworkCore;
 using VCallbackServer.Data;
 

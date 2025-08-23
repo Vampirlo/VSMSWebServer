@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using VCallbackServer.Services;
+using VSMSWebServer.Services;
 
-namespace VCallbackServer.Controllers
+namespace VSMSWebServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // /api/MegafonCallback
