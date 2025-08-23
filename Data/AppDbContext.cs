@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VSMSWebServer.Models;
 
-namespace VCallbackServer.Data
+namespace VSMSWebServer.Data
 {
     public class AppDbContext : DbContext
     {

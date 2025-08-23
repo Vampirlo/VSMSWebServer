@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VCallbackServer.Data;
+using VSMSWebServer.Data;
 using VSMSWebServer.Models;
 
 namespace VSMSWebServer.Services

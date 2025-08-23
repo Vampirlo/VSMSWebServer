@@ -1,7 +1,7 @@
 // netstat -ano | findstr :8080
 using VSMSWebServer.Services;
 using Microsoft.EntityFrameworkCore;
-using VCallbackServer.Data;
+using VSMSWebServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VSMSWebServer.Services;
 
-namespace VCallbackServer.Controllers
+namespace VSMSWebServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // /api/Requests
