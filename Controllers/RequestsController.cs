@@ -41,7 +41,7 @@ namespace VSMSWebServer.Controllers
 
             try
             {
-                if (requests == null || !requests.Any())
+                if (requests == null || requests.Count == 0)
                 {
                     // in log
                     HttpContext.Response.ContentType = "text/plain";
@@ -49,14 +49,10 @@ namespace VSMSWebServer.Controllers
                     return BadRequest("No requests provided");
                 }
 
-                foreach (var request in requests)
-                {
-                    // сделать метод в RequestRepositoryService для записи без id первого
-                    // request.Id, request.PhoneNumber, request.Status);
-                    // проверять uuid, на предмет существования элемента уже в таблице
-                    // если его нет, то делать запись без id
-                    // если элеменет существует, то идёт он нахуй и не перезаписывает ничего
-                }
+                int addedCount = await _requestRepository.AddBulkRequestsIfNotExistAsync(requests);
+                int skippedCount = requests.Count - addedCount;
+
+                _requestLogger.LogInformation($"Added {addedCount} new requests, skipped {skippedCount} existing requests");
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@ using VSMSWebServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем SQLite
+// Adding SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=requests.db"));
 
@@ -23,11 +23,11 @@ builder.WebHost.UseUrls($"http://*:{port}", $"http://0.0.0.0:{port}");
 
 var app = builder.Build();
 
-// Автоматическое создание базы данных при запуске
+// Automatic database creation on startup
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.EnsureCreated(); // Создаёт БД и таблицу если их нет
+    dbContext.Database.EnsureCreated(); // Creates a database and table if they do not exist
 }
 
 //app.UseHttpsRedirection();

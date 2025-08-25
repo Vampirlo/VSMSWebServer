@@ -12,6 +12,10 @@ namespace VSMSWebServer.Services
             _logger = logger;
         }
 
+        public void LogInformation(string info)
+        {
+            _logger.LogInformation("Time: {Time} - {Info}", DateTime.Now, info);
+        }
         public void LogRequestStatusUpdate(string uuid, string status, bool success, string? errorMessage = null)
         {
             if (success)
