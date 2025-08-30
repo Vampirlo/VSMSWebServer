@@ -43,11 +43,28 @@ namespace VSMSWebServer.Services
 
             if (request == null)
             {
-                return false; // Record not found
-            }
+                // Create a new entry if not found
+                var newRequest = new Request
+                {
+                    Uuid = uuid,
+                    Status = status,
+                    
+                    FirstName = string.Empty,
+                    SecondName = string.Empty,
+                    LastName = string.Empty,
+                    PhoneNumber = string.Empty,
+                    Message = string.Empty,
+                    SendTime = DateTime.UtcNow.ToString("HH:mm dd.MM.yy")
+                };
 
-            // Update the status
-            request.Status = status;
+                _context.Requests.Add(newRequest);
+            }
+            else
+            {
+                // Update the status of existing record
+                request.Status = status;
+                _context.Requests.Update(request);
+            }
 
             // Save changes to the database
             await _context.SaveChangesAsync();
@@ -89,35 +106,55 @@ namespace VSMSWebServer.Services
             if (requests == null || !requests.Any())
                 return 0;
 
-            // Get all existing UUIDs
-            var existingUuids = await _context.Requests
+            // We get only those records whose UUID is in the input data.
+            var existingRequests = await _context.Requests
                 .Where(r => requests.Select(x => x.Uuid).Contains(r.Uuid))
-                .Select(r => r.Uuid)
                 .ToListAsync();
 
-            // Filter only new entries
-            var newRequests = requests
-                .Where(r => !existingUuids.Contains(r.Uuid))
-                .Select(r => new Request
-                {
-                    FirstName = r.FirstName,
-                    SecondName = r.SecondName,
-                    LastName = r.LastName,
-                    PhoneNumber = r.PhoneNumber,
-                    Uuid = r.Uuid,
-                    Status = r.Status,
-                    Message = r.Message,
-                    SendTime = r.SendTime
-                })
-                .ToList();
+            var newRequests = new List<Request>();
 
-            if (newRequests.Count != 0)
+            foreach (var req in requests)
             {
-                await _context.Requests.AddRangeAsync(newRequests);
-                await _context.SaveChangesAsync();
+                var existing = existingRequests.FirstOrDefault(r => r.Uuid == req.Uuid);
+
+
+                if (existing == null)
+                {
+                    // There is no UUID -> create a new record
+                    newRequests.Add(new Request
+                    {
+                        FirstName = req.FirstName,
+                        SecondName = req.SecondName,
+                        LastName = req.LastName,
+                        PhoneNumber = req.PhoneNumber,
+                        Uuid = req.Uuid,
+                        Status = req.Status,
+                        Message = req.Message,
+                        SendTime = req.SendTime
+                    });
+                }
+                else if (string.IsNullOrEmpty(existing.PhoneNumber))
+                {
+                    // UUID matched -> updating all fields except Status
+                    existing.FirstName = req.FirstName;
+                    existing.SecondName = req.SecondName;
+                    existing.LastName = req.LastName;
+                    existing.PhoneNumber = req.PhoneNumber;
+                    existing.Message = req.Message;
+                    existing.SendTime = req.SendTime;
+
+                    _context.Requests.Update(existing);
+                }
             }
 
-            return newRequests.Count;
+            if (newRequests.Count > 0)
+            {
+                await _context.Requests.AddRangeAsync(newRequests);
+            }
+
+            var affected = await _context.SaveChangesAsync();
+
+            return affected;
         }
     }
 }

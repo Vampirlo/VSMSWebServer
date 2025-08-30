@@ -17,7 +17,7 @@ namespace VSMSWebServer.Controllers
             _requestLogger = requestLogger;
         }
 
-        [HttpGet]
+        [HttpGet("downloadAll")]
         public async Task<IActionResult> GetAllRequests()
         {
             var requests = await _requestRepository.GetAllRequestsAsync();
@@ -58,8 +58,8 @@ namespace VSMSWebServer.Controllers
             {
                 // ex in log
                 HttpContext.Response.ContentType = "text/plain";
-                HttpContext.Response.ContentLength = 21;
-                return StatusCode(500, "Internal server error");
+                HttpContext.Response.ContentLength = ex.ToString().Length;
+                return StatusCode(500, ex.ToString());
             }
 
             HttpContext.Response.ContentType = "text/plain";
