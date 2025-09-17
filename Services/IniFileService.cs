@@ -114,5 +114,15 @@ namespace VSMSWebClient.Services
 
             File.WriteAllLines(_filePath, lines, Encoding.UTF8);
         }
+
+        public int ReadIntValue(string section, string key, int defaultValue = 0)
+        {
+            var value = ReadValue(section, key);
+            if (int.TryParse(value, out int result))
+            {
+                return result;
+            }
+            return defaultValue;
+        }
     }
 }
