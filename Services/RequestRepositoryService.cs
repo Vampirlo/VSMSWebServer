@@ -156,5 +156,12 @@ namespace VSMSWebServer.Services
 
             return affected;
         }
+
+        public async Task<List<Request>> GetRequestsUpdatedSinceAsync(long sinceTimestamp)
+        {
+            return await _context.Requests
+                .Where(r => r.UpdatedAt > sinceTimestamp)
+                .ToListAsync();
+        }
     }
 }

@@ -10,11 +10,13 @@ namespace VSMSWebServer.Controllers
     {
         private readonly RequestLoggerService _requestLogger;
         private readonly RequestRepositoryService _requestRepository;
+        private readonly ClientSyncStateService _clientStateService;
 
-        public RequestsController(RequestRepositoryService requestRepository, RequestLoggerService requestLogger)
+        public RequestsController(RequestRepositoryService requestRepository, RequestLoggerService requestLogger, ClientSyncStateService clientStateService)
         {
             _requestRepository = requestRepository;
             _requestLogger = requestLogger;
+            _clientStateService = clientStateService;
         }
 
         [HttpGet("downloadAll")]
@@ -65,6 +67,31 @@ namespace VSMSWebServer.Controllers
             HttpContext.Response.ContentType = "text/plain";
             HttpContext.Response.ContentLength = 2;
             return Ok("OK");
+        }
+
+        [HttpGet("sync")]
+        public async Task<IActionResult> Sync()
+        {
+            var clientIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (string.IsNullOrEmpty(clientIp)) return BadRequest();
+
+            var state = _clientStateService.GetOrCreate(clientIp);
+            var needFull = (DateTime.UtcNow - state.LastFullSyncTime).TotalHours >= 24;
+
+            List<Request> result;
+            if (needFull)
+            {
+                result = await _requestRepository.GetAllRequestsAsync();
+                state.LastFullSyncTime = DateTime.UtcNow;
+            }
+            else
+            {
+                var sinceTimestamp = new DateTimeOffset(state.LastSyncTime).ToUnixTimeMilliseconds();
+                result = await _requestRepository.GetRequestsUpdatedSinceAsync(sinceTimestamp);
+            }
+            state.LastSyncTime = DateTime.UtcNow;
+
+            return Ok(result);
         }
     }
 }

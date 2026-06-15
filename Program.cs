@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<RequestLoggerService>();
 builder.Services.AddScoped<RequestRepositoryService>();
 builder.Services.AddSingleton<IniFileService>();
-
+builder.Services.AddSingleton<ClientSyncStateService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();

@@ -1,4 +1,6 @@
-﻿namespace VSMSWebServer.Models
+﻿using System.Text.Json.Serialization;
+
+namespace VSMSWebServer.Models
 {
     public class Request
     {
@@ -11,5 +13,8 @@
         public string? Status { get; set; }
         public string? Message { get; set; }
         public string? SendTime { get; set; }
+
+        [JsonIgnore]
+        public long UpdatedAt { get; set; }
     }
 }

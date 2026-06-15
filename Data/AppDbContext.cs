@@ -44,9 +44,26 @@ namespace VSMSWebServer.Data
 
                 entity.Property(e => e.SendTime)
                     .HasColumnName("sendTime");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnName("updatedAt")
+                    .HasDefaultValueSql("CAST(strftime('%s', 'now') * 1000 AS INTEGER)");
             });
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker.Entries<Request>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                entry.Entity.UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }
