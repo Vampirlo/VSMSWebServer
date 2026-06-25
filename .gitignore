@@ -7,7 +7,7 @@
 **/*.ini
 
 auth.ps
-
+*.pfx
 # User-specific files
 *.rsuser
 *.suo
@@ -131,7 +131,7 @@ $tf/
 
 # Guidance Automation Toolkit
 *.gpState
-
+appsettings.json
 # ReSharper is a .NET coding add-in
 _ReSharper*/
 *.[Rr]e[Ss]harper

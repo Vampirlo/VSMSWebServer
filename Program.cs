@@ -1,8 +1,9 @@
 // netstat -ano | findstr :8080
-using VSMSWebServer.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using VSMSWebServer.Data;
 using VSMSWebClient.Services;
+using VSMSWebServer.Data;
+using VSMSWebServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,16 +39,28 @@ bool useLocalhost = !string.IsNullOrEmpty(localhostValue) &&
 if (useLocalhost)
 {
     builder.WebHost.UseUrls(
-        $"http://0.0.0.0:{port}",
-        $"http://localhost:{port}"
+        $"https://0.0.0.0:{port}",
+        $"https://localhost:{port}"
     );
 }
 else
 {
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    builder.WebHost.UseUrls($"https://0.0.0.0:{port}");
 }
 
 var app = builder.Build();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        logger.LogError(exception, "Unhandled exception in request {Path}", context.Request.Path);
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("Internal Server Error");
+    });
+});
 
 // Automatic database creation on startup
 using (var scope = app.Services.CreateScope())
@@ -56,7 +69,7 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.EnsureCreated(); // Creates a database and table if they do not exist
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
