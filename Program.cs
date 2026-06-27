@@ -4,18 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using VSMSWebClient.Services;
 using VSMSWebServer.Data;
 using VSMSWebServer.Services;
+using VSMSWebServer.Services.MegaLabs;
+using VSMSWebServer.Services.MegaLabs.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adding SQLite
+// Adding DbContext (SQLite)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=requests.db"));
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<RequestLoggerService>();
+builder.Services.AddSingleton<RequestLoggerService>();
 builder.Services.AddScoped<RequestRepositoryService>();
 builder.Services.AddSingleton<IniFileService>();
 builder.Services.AddSingleton<ClientSyncStateService>();
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
@@ -24,6 +27,25 @@ builder.Logging.AddFile("logs/ServerMainInfo-{Date}.txt");
 var iniService = new IniFileService();
 string portValue = iniService.ReadValue("VSMSWebServer", "port");
 string localhostValue = iniService.ReadValue("VSMSWebServer", "localhost");
+double pduPerSecond = iniService.ReadDoubleValue("VSMSWebServer", "pduPerSecond", 4.0);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddHttpClient<SmsMegaLabsService>(); // реальный отправитель
+builder.Services.AddSingleton<SmsQueueManager>(sp =>
+{
+    var real = sp.GetRequiredService<SmsMegaLabsService>();
+    var logger = sp.GetRequiredService<ILogger<SmsQueueManager>>();
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    return new SmsQueueManager(real, logger, pduPerSecond, scopeFactory);
+});
+// Подменяем интерфейс ISmsMegaLabsService на SmsQueueManager
+builder.Services.AddSingleton<ISmsMegaLabsService>(sp => sp.GetRequiredService<SmsQueueManager>());
+// Фоновый обработчик очереди
+builder.Services.AddHostedService<SmsQueueBackgroundService>();
+
 
 int port = 8080;
 
@@ -49,6 +71,12 @@ else
 }
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseExceptionHandler(errorApp =>
 {

@@ -27,6 +27,7 @@ namespace VSMSWebClient.Services
                 writer.WriteLine("[VSMSWebServer]");
                 writer.WriteLine("port=");
                 writer.WriteLine("localhost=false");
+                writer.WriteLine("pduPerSecond=4");
             }
         }
 
@@ -122,6 +123,15 @@ namespace VSMSWebClient.Services
             {
                 return result;
             }
+            return defaultValue;
+        }
+
+        public double ReadDoubleValue(string section, string key, double defaultValue = 0)
+        {
+            var value = ReadValue(section, key);
+            if (double.TryParse(value, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out double result))
+                return result;
             return defaultValue;
         }
     }
