@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VSMSWebServer.Models;
 using VSMSWebServer.Services;
 
@@ -6,6 +7,7 @@ namespace VSMSWebServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // /api/Requests
+    [AllowAnonymous]
     public class RequestsController : ControllerBase
     {
         private readonly RequestLoggerService _requestLogger;
