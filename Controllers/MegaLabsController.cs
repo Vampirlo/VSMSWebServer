@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VSMSWebServer.Models;
 using VSMSWebServer.Services;
 using VSMSWebServer.Services.MegaLabs.Interfaces;
@@ -7,6 +8,7 @@ namespace VSMSWebServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class MegaLabsController : ControllerBase
     {
         private readonly ISmsMegaLabsService _smsService;

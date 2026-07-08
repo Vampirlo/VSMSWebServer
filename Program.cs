@@ -67,6 +67,20 @@ string portValue = iniService.ReadValue("VSMSWebServer", "port");
 string localhostValue = iniService.ReadValue("VSMSWebServer", "localhost");
 double pduPerSecond = iniService.ReadDoubleValue("VSMSWebServer", "pduPerSecond", 4.0);
 
+string frontendCORS = iniService.ReadValue("VSMSFrontendCORS", "allowedOrigins");
+
+//CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(frontendCORS)   // разрешённый источник
+              .AllowAnyMethod()                         // GET, POST, DELETE и т.д.
+              .AllowAnyHeader()                         // любые заголовки
+              .AllowCredentials();                      // если нужно передавать куки/токены
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -181,6 +195,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
 
