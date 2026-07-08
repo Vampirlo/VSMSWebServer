@@ -27,7 +27,9 @@ namespace VSMSWebClient.Services
                 writer.WriteLine("[VSMSWebServer]");
                 writer.WriteLine("port=");
                 writer.WriteLine("localhost=false");
-                writer.WriteLine("pduPerSecond=4");
+                writer.WriteLine("pduPerSecond=");
+                writer.WriteLine("[VSMSFrontendCORS]");
+                writer.WriteLine("allowedOrigins=");
             }
         }
 
