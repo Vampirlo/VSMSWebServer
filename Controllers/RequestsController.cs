@@ -7,7 +7,7 @@ namespace VSMSWebServer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] // /api/Requests
-    [AllowAnonymous]
+    [Authorize]
     public class RequestsController : ControllerBase
     {
         private readonly RequestLoggerService _requestLogger;
