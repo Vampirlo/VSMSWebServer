@@ -30,6 +30,13 @@ namespace VSMSWebServer.Controllers
             return Ok(requests);
         }
 
+        [HttpGet("GetAllRequestForDays")]
+        public async Task<IActionResult> GetAllRequestForDays(int daysCount)
+        {
+            var requests = await _requestRepository.GetRecentRequestsAsync(daysCount);
+            return Ok(requests);
+        }
+
         [HttpGet("{uuid}")]
         public async Task<IActionResult> GetRequestByUuid(string uuid)
         {

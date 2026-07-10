@@ -163,5 +163,13 @@ namespace VSMSWebServer.Services
                 .Where(r => r.UpdatedAt > sinceTimestamp)
                 .ToListAsync();
         }
+
+        public async Task<List<Request>> GetRecentRequestsAsync(int days)
+        {
+            var cutoff = DateTimeOffset.UtcNow.AddDays(-days).ToUnixTimeMilliseconds();
+            return await _context.Requests
+                .Where(r => r.UpdatedAt >= cutoff)
+                .ToListAsync();
+        }
     }
 }

@@ -153,7 +153,6 @@ else
 var app = builder.Build();
 
 app.UseAuthentication(); // обязательно
-app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
